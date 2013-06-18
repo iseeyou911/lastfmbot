@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    
+    <script type="text/javascript">
+        function setCookie(c_name, value, exdate, path)
+        {
+            var c_value=escape(value) + ((exdate==null) ? "" : "; expires="+exdate.toUTCString()) + '; path=' + (path || '/');
+            document.cookie=c_name + "=" + c_value;
+        }
+        
+
+        var kvMap, token, requestId; 
+            
+        kvMap = {};
+        window.location.search.substr(1).split('&').forEach(function(keyValue) {
+            var key, value;
+            keyValue = keyValue.split('=');
+            kvMap[decodeURIComponent(keyValue[0])] = decodeURIComponent(keyValue[1]);
+        });
+        
+        token = kvMap['token'];
+        requestId = kvMap['requestId'];
+
+        if (requestId && token) {
+            setCookie(requestId, JSON.stringify({response : token, status: 'OK'}), new Date(+(new Date()) + 30000));
+        } else if (requestId) {
+            setCookie(requestId, JSON.stringify({status: 'FAILD'}), new Date(+(new Date()) + 30000));
+        }
+
+        window.close();
+    </script>
+</body>
+</html>
