@@ -6,16 +6,27 @@ define([
  'dojo/request',
  'dojox/encoding/digests/MD5',
  'dojox/uuid/generateRandomUuid',
+ 'org/lastfm/api/TagsAPI',
+ 'org/lastfm/api/LibraryAPI',
+ 'org/lastfm/api/APITools',
  'dojo/Deferred'
-], function(declare, lang, ioQuery, cookie, request, MD5, uuid, Deferred) {
+], function(declare, lang, ioQuery, cookie, request, MD5, uuid, TagsAPI, LibraryAPI, APITools, Deferred) {
     var _host = '/api/';
     var _api_root = '/2.0/';
 
-    return declare('org.lastfm.LastFmAPI', [], {     
+    return declare('org.lastfm.api.LastFmAPI', [], {     
         constructor : function(args) {
             lang.mixin(this, args || {}); 
 
-            this.session = cookie('session'); 
+            this.tag = new TagsAPI({
+                key : this.key,
+                secret : this.secret
+            });
+            this.library = new LibraryAPI({
+                key : this.key,
+                secret : this.secret
+            });
+            this.session = JSON.parse(cookie('session')); 
         },
         //Authentification with api key
         auth : function(key) {
@@ -65,7 +76,7 @@ define([
         },
 
         isAuthed : function() {
-            return !this.session;
+            return !!this.session;
         },
 
         _checkForToken : function(requestId, dfd) {
@@ -103,31 +114,12 @@ define([
         getSession : function(token, key) {
             return request.get(_api_root, {
                 handleAs : 'json',
-                query : lang.mixin(this._appendServiceSignature({
+                query : lang.mixin(APITools._appendServiceSignature({
                     method : 'auth.getSession',
                     token : token || this.token,
                     api_key : key || this.key
-                }), {format : 'json'})
+                }, this.secret), {format : 'json'})
             }); 
-        },
-        _appendServiceSignature : function(params) {
-            var list, keyValueString;
-            list = [];
-            params = params || {};
-
-            for (key in params) {
-                if (params.hasOwnProperty(key)) {
-                    list.push(key); 
-                }
-            }
-            
-            keyValueString = list.sort().map(function(key) {
-                return key + params[key];   
-            }).join('');
-
-            params.api_sig = MD5(keyValueString + this.secret, 1 );
-
-            return params;
         },
         _getPath : function(method) {
             method = (Array.isArray(method) ? method : [method]).join('/') + '/';     

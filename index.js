@@ -8,17 +8,15 @@ require({
         }
     ]
 }, [
-    'org/lastfm/LastFmAPI',
+    'org/lastfm/app/Bot',
     'dojo/dom',
+    'dojo/dom-attr',
+    'dojo/query',
     'dojo/domReady!'
-], function (LastFmAPI, dom) {
-    var api = new LastFmAPI({
-        key : 'bbb3ca8d510d2635236482db15aa4cb9',
-        secret : '22315c60539b135ae41689fb51111798'
-    });
+], function (LastFmAPI, dom, domAttr, query) {
+    var html;
+    html = query('html')[0];
 
-    var authBtn = dom.byId('authBtn'); 
-    authBtn.onclick = function() {
-        api.auth();
-    };
+    domAttr.set(html, 'ng-app', 'org.lastfm.app.Bot');
+    angular.bootstrap(html, ['org.lastfm.app.Bot']);
 });

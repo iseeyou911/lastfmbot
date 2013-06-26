@@ -1,0 +1,20 @@
+<form novalidate name="artistsByTagsForm">
+    Теги: <input required type="text" ng-model="search.tags" />
+    <p>
+        Тэги можно разделять запятой или точкой с запятой.
+    </p>
+    <button ng-click="searchArtistsByTags()" ng-disabled="artistsByTagsForm.$invalid || searchBtnDisabled">Поиск артистов</button>
+    <button ng-click="addArtists()" ng-disabled="!search.results || !search.results.length || addArtistsBtnDisabled">Добавить артистов</button>
+</form>
+
+<div ng-show="search.results && search.results.length">
+    <span ng-click="selectAll()" class="pseudo-link">Выбрать все</span>
+    <span ng-click="deselectAll()" class="pseudo-link">Отменить все</span>
+</div>
+<ul >
+    <li ng-repeat="artist in search.results">
+        <input type="checkbox" ng-model="artist.checked"/>
+        
+        <h3>{{artist.name}}</h3>
+    </li>
+</ul>
