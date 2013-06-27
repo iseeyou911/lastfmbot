@@ -1,9 +1,11 @@
 <form novalidate name="tracksByTagsForm">
-    Теги: <input required type="text" ng-model="search.tags" />
+    <div>
+        Теги: <input required type="text" ng-model="search.tags" />
+    <button class="btn btn-primary" ng-click="searchTracksByTags()" ng-disabled="tracksByTagsForm.$invalid || searchBtnDisabled">Поиск песен</button>
+    </div>
     <p>
         Тэги можно разделять запятой или точкой с запятой.
     </p>
-    <button ng-click="searchTracksByTags()" ng-disabled="tracksByTagsForm.$invalid || searchBtnDisabled">Поиск песен</button>
     <button ng-click="addTracks()" ng-disabled="!search.results || !search.results.length || addTracksBtnDisabled">Добавить песни</button>
 </form>
 
@@ -11,13 +13,20 @@
     <span ng-click="selectAll()" class="pseudo-link">Выбрать все</span>
     <span ng-click="deselectAll()" class="pseudo-link">Отменить все</span>
 </div>
-<ul >
-    <li ng-repeat="track in search.results">
-        <input type="checkbox" ng-model="track.checked"/>
-        <input type="checkbox" ng-model="track.favorite"/>
-        <input type="checkbox" ng-model="track.playlist"/>
-        
-        <h3>{{track.name}}</h3>
-        <p>Артист: {{track.artist.name}}</p>
+<ul class="lastfmbot-results-list">
+    <li ng-repeat="track in search.results" class="unselectable {{'_' + track.status}}" ng-mouseover="" ng-mouseout="" ng-show="!track.hide" ng-selected="track.checked" title="{{track.name}} - {{track.artist.name}}">
+        <div class="lastfmbot-results-list-item-ctrl">
+            <span class="glyph" title="Добавить в избранное">h</span>
+            <!---<span class="glyph" title="Добавить в плэйлист">b</span>---!>
+        </div> 
+        <div ng-click="select(track)" >
+            <h3>{{track.name}}</h3>
+            <p>
+                {{track.artist.name}}
+            </p>
+        </div>
     </li>
 </ul>
+<div ng-show="search.results.length == search.limit" align="center">
+    <span class="btn" ng-click="searchTracksByTags(true)">Еще</span>
+</div>

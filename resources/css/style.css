@@ -1,0 +1,149 @@
+//Styles
+html {
+    font-size : 12px;
+}
+input {
+    margin-bottom : 0 !important;
+}
+.lastfmbot-results-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.lastfmbot-results-list li[selected=selected] {
+    background: rgb(243, 255, 223);
+}
+
+
+.lastfmbot-results-list li._waiting{
+    background: rgb(255, 255, 255) !important;
+}
+
+.lastfmbot-results-list li._process{
+    background: rgb(129, 240, 255) !important;
+}
+
+.lastfmbot-results-list li._added{
+    background: rgb(208, 255, 129) !important;
+}
+
+.lastfmbot-results-list li {
+    position: relative;
+    display: inline-block;
+    padding: 5px 15px;
+    margin: 5px;
+    box-shadow: 0 0 4px rgba(0,0,0, 0.3);
+    width: 160px;
+    overflow: hidden;
+    font-size: 0.8em;
+    cursor: pointer;
+}
+
+.lastfmbot-results-list-item-ctrl {
+    position: absolute;
+    bottom: 0;
+    right : 5px;
+}
+
+.lastfmbot-results-list li h3 {
+    margin: 2px 0 4px 0; 
+    white-space: nowrap;
+    line-height: 15px;
+    font-size: 15px;
+}
+
+
+.lastfmbot-results-list li .glyph {
+    font-size: 14px;
+    cursor : pointer;
+
+}
+.lastfmbot-results-list li p {
+    margin: 2px 0 2px 0; 
+    white-space: nowrap;
+}
+
+
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url(../fonts/OpenSans.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Open Sans Light'), local('OpenSans-Light'), url(../fonts/OpenSans-Book.woff) format('woff');
+}
+
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url(../fonts/OpenSans-Semibold.woff) format('woff');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(../fonts/OpenSans-Bold.woff) format('woff');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 800;
+  src: local('Open Sans Extrabold'), local('OpenSans-Extrabold'), url(../fonts/OpenSans-Extrabold.woff) format('woff');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(../fonts/OpenSans-Italic.woff) format('woff');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 600;
+  src: local('Open Sans Semibold Italic'), local('OpenSans-SemiboldItalic'), url(../fonts/OpenSans-SemiboldItalic.woff) format('woff');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Open Sans Bold Italic'), local('OpenSans-BoldItalic'), url(../fonts/OpenSans-BoldItalic.woff) format('woff');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 800;
+  src: local('Open Sans Extrabold Italic'), local('OpenSans-ExtraboldItalic'), url(../fonts/OpenSans-ExtraboldItalic.woff) format('woff');
+}
+
+
+@font-face {
+    font-family: 'Icons';
+    src: url('/resources/fonts/glyph.eot');
+    src: url('/resources/fonts/glyph.woff') format('woff'),
+         url('/resources/fonts/glyph.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif !important;
+}
+
+
+.glyph{
+    font-family: Icons;   
+}
+
+.unselectable {
+    -moz-user-select:none;
+    -webkit-user-select:none;
+    user-select:none;
+}
