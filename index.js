@@ -15,8 +15,6 @@ require({
     'dojo/domReady!'
 ], function (LastFmAPI, dom, domAttr, query) {
     var html;
-    html = query('html')[0];
 
-    domAttr.set(html, 'ng-app', 'org.lastfm.app.Bot');
-    angular.bootstrap(html, ['org.lastfm.app.Bot']);
+    angular.bootstrap(document, ['org.lastfm.app.Bot']);
 });

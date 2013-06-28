@@ -11,7 +11,7 @@ define([
     directives = angular.module('org.lastfm.ui.library.directives', []); 
     controllers = angular.module('org.lastfm.ui.library.controllers', []); 
     limit = 100;
-    libraryCtrl = controllers.controller('org.lastfm.ui.library.controllers.libraryCtrl', ['$scope', '$lastFMAPI', '$location', function($scope, $lastFMAPI, $location) {
+    libraryCtrl = controllers.controller('org.lastfm.ui.library.controllers.libraryCtrl', ['$q', '$timeout', '$scope', '$lastFMAPI', '$location', '$taskboard', function($q, $timeout, $scope, $lastFMAPI, $location, $taskboard) {
         $scope.searchBtnDisabled = false;
         $scope.addArtistsBtnDisabled = false;
         $scope.addTracksBtnDisabled = false;
@@ -27,19 +27,32 @@ define([
             $scope.search.page = append ? $scope.search.page + 1: 0;
             
             $lastFMAPI.tag.getTopArtists($scope.search.tags.split(/[,;]\s*/), limit, $scope.search.page).then(function(result) {
-                var artists;
-                artists = [];
-                result = result.topartists;
 
-                (lang.isArray(result) ? result : [result]).forEach(function(resultSet) {
-                    (lang.isArray(resultSet.artist) ? resultSet.artist : [resultSet.artist]).forEach(function(artist) {
-                        artists.push(lang.mixin(artist, {tags : resultSet['@attr'], checked : true}));
-                    });   
+                $scope.$apply(function(){
+                    var artists;
+                     
+                    if (result.error) {
+                        $scope.searchBtnDisabled = false;
+                        $scope.search.error = result.error.message;
+                        $scope.$apply();
+                        return;
+                    }
+                    artists = [];
+                    result = result.topartists;
+
+                    (lang.isArray(result) ? result : [result]).forEach(function(resultSet) {
+                        (lang.isArray(resultSet.artist) ? resultSet.artist : [resultSet.artist]).forEach(function(artist) {
+                            artists.push(lang.mixin(artist, {tags : resultSet['@attr'], checked : true}));
+                        });   
+                    });
+
+                    $scope.search.results = append ? $scope.search.results.concat(artists) : artists;
+                    $scope.searchBtnDisabled = false;
                 });
-
-                $scope.search.results = append ? $scope.search.results.concat(artists) : artists;
-                $scope.searchBtnDisabled = false;
-                $scope.$apply();
+            }, function(){
+                $scope.$apply(function() {
+                    $scope.searchBtnDisabled = false;
+                });
             });
 
             return false;
@@ -53,19 +66,30 @@ define([
             $scope.search.page = append ? $scope.search.page + 1: 0;
             
             $lastFMAPI.tag.getTopTracks($scope.search.tags.split(/[,;]\s*/), limit, $scope.search.page).then(function(result) {
-                var tracks;
-                tracks = [];
-                result = result.toptracks;
 
-                (lang.isArray(result) ? result : [result]).forEach(function(resultSet) {
-                    (lang.isArray(resultSet.track) ? resultSet.track : [resultSet.track]).forEach(function(track) {
-                        tracks.push(lang.mixin(track, {tags : resultSet['@attr'], checked : true}));
-                    });   
+                $scope.$apply(function(){
+                    var tracks;
+                    if (result.error) {
+                        $scope.searchBtnDisabled = false;
+                        $scope.search.error = result.error.message;
+                        return;
+                    }
+                    tracks = [];
+                    result = result.toptracks;
+
+                    (lang.isArray(result) ? result : [result]).forEach(function(resultSet) {
+                        (lang.isArray(resultSet.track) ? resultSet.track : [resultSet.track]).forEach(function(track) {
+                            tracks.push(lang.mixin(track, {tags : resultSet['@attr'], checked : true}));
+                        });   
+                    });
+
+                    $scope.search.results = append ? $scope.search.results.concat(tracks) : tracks;
+                    $scope.searchBtnDisabled = false;
                 });
-
-                $scope.search.results = append ? $scope.search.results.concat(tracks) : tracks;
-                $scope.searchBtnDisabled = false;
-                $scope.$apply();
+            }, function(){
+                $scope.$apply(function() {
+                    $scope.searchBtnDisabled = false;
+                });
             });
             return false;
         };
@@ -88,6 +112,7 @@ define([
         $scope.addTracks = function() {
             var tracks, batchSize, packages, i, k, j, processPack, dfd;
 
+            $taskboard.addTask();
             batchSize = 5;
             $scope.addtracksBtnDisabled = true;
             
@@ -116,16 +141,24 @@ define([
             }
 
             processPack = function(pack, delay) {
-                var dfd = new Deferred();
+                var dfd = new Deferred(), timeoutHandler;
 
-                setTimeout(function() {
+                timeoutHandler = $timeout(function() {
                     dfd.resolve();
                 }, delay);
 
+                dfd.then(null, function() {
+                    $timeout.cancel(timeoutHandler);
+                });
+
+                pack.forEach(function(track) {
+                    track[3].status = 'starting';
+                });
+
+                $scope.$apply();
                 return dfd.then(function() {
                     return all(pack.map(function(track) {
                         track[3].status = 'process';
-                        $scope.$apply();
                         return $lastFMAPI.library.addTrack.apply($lastFMAPI.library, track).then(function() {
                             track[3].status = 'added';
                             $scope.$apply();
@@ -134,10 +167,15 @@ define([
                 });
             };
 
-            all(packages.map(function(pack, i) {
-                return processPack(pack, i * 5000);
-            }));
+            var process = new Deferred(), promise = process.promise;
+
+            packages.forEach(function(pack, i){
+                promise = promise.then(function() {
+                    return processPack(pack, 3000 * (i && 1));   
+                });
+            });                
             
+            process.resolve();
             return false;
         };
 

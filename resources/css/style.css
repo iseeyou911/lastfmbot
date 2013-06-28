@@ -27,6 +27,11 @@ input {
     background: rgb(208, 255, 129) !important;
 }
 
+.lastfmbot-results-list li._starting {
+    animation: blind 1s infinite;
+    -webkit-animation: blind 1s infinite; /* Safari and Chrome */
+}
+
 .lastfmbot-results-list li {
     position: relative;
     display: inline-block;
@@ -147,3 +152,30 @@ body {
     -webkit-user-select:none;
     user-select:none;
 }
+
+
+.fs-s {
+    font-size: 0.8em;
+}
+
+@keyframes blind
+{
+    0% {
+        background: #fff;
+    }
+    50% { 
+        background: rgb(129, 240, 255);
+    }
+}
+
+@-webkit-keyframes blind /* Safari and Chrome */
+{
+    0% {
+        background: #fff;
+    }
+    50% { 
+        background: rgb(129, 240, 255);
+    }
+}
+
+

@@ -3,18 +3,20 @@
         Теги: <input required type="text" ng-model="search.tags" />
     <button class="btn btn-primary" ng-click="searchTracksByTags()" ng-disabled="tracksByTagsForm.$invalid || searchBtnDisabled">Поиск песен</button>
     </div>
-    <p>
+    <p class="muted fs-s">
         Тэги можно разделять запятой или точкой с запятой.
     </p>
-    <button ng-click="addTracks()" ng-disabled="!search.results || !search.results.length || addTracksBtnDisabled">Добавить песни</button>
 </form>
 
-<div ng-show="search.results && search.results.length">
-    <span ng-click="selectAll()" class="pseudo-link">Выбрать все</span>
-    <span ng-click="deselectAll()" class="pseudo-link">Отменить все</span>
+<div class="lastfm-ctrl-panel" ng-show="search.results && search.results.length">
+    <button class="btn btn-success btn-mini" ng-click="addTracks()" ng-disabled="!search.results || !search.results.length || addTracksBtnDisabled">Добавить песни</button>
+    <span class="btn-group">
+        <span ng-click="selectAll()" class="btn btn-mini">Выбрать все</span>
+        <span ng-click="deselectAll()" class="btn btn-mini">Отменить все</span>
+    </span>
 </div>
 <ul class="lastfmbot-results-list">
-    <li ng-repeat="track in search.results" class="unselectable {{'_' + track.status}}" ng-mouseover="" ng-mouseout="" ng-show="!track.hide" ng-selected="track.checked" title="{{track.name}} - {{track.artist.name}}">
+    <li ng-repeat="track in search.results" class="unselectable {{'_' + track.status}}" ng-show="!track.hide" ng-selected="track.checked" title="{{track.name}} - {{track.artist.name}}">
         <div class="lastfmbot-results-list-item-ctrl">
             <span class="glyph" title="Добавить в избранное">h</span>
             <!---<span class="glyph" title="Добавить в плэйлист">b</span>---!>
@@ -27,6 +29,6 @@
         </div>
     </li>
 </ul>
-<div ng-show="search.results.length == search.limit" align="center">
+<div ng-show="search.results.length == (search.limit * (search.page + 1))" align="center">
     <span class="btn" ng-click="searchTracksByTags(true)">Еще</span>
 </div>

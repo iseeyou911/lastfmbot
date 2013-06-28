@@ -2,8 +2,9 @@ define([
     'org/lastfm/api/LastFmAPI',
     'org/lastfm/ui/auth/Auth',
     'org/lastfm/ui/library/Library',
+    'org/lastfm/ui/taskboard/TaskBoard',
     'dojo/aspect'
-], function(LastFmAPI, Auth, Library, aspect) {
+], function(LastFmAPI, Auth, Library, TaskBoard, aspect) {
     var module, api;
 
     api = new LastFmAPI({
@@ -11,7 +12,7 @@ define([
         secret : '22315c60539b135ae41689fb51111798'
     });
 
-    module = angular.module('org.lastfm.app.Bot', ['org.lastfm.ui.auth', 'org.lastfm.ui.library']);
+    module = angular.module('org.lastfm.app.Bot', ['org.lastfm.ui.auth', 'org.lastfm.ui.library', 'org.lastfm.ui.taskboard']);
     
     module.config([
         '$provide', 
