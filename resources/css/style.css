@@ -25,6 +25,8 @@ input {
 
 .lastfmbot-results-list li._added{
     background: rgb(208, 255, 129) !important;
+    animation: hide 1s;
+    -webkit-animation: hide 1s; /* Safari and Chrome */
 }
 
 .lastfmbot-results-list li._starting {
@@ -68,7 +70,15 @@ input {
     white-space: nowrap;
 }
 
-
+.lastfm-taskboard-task-panel {
+  position: fixed;
+  top: 0;
+  right: 10px;
+  width: 220px;
+  height: 100%;
+  overflow: auto;
+  font-size: 0.8em;
+}
 
 @font-face {
   font-family: 'Open Sans';
@@ -178,4 +188,37 @@ body {
     }
 }
 
+@keyframes hide
+{
+    0% {
+        opacity: 1;
+    }
+    50% { 
+        opacity: 1;
+    }
+
+    99% { 
+        opacity: 0;
+    }
+    100% {
+      opacity: 0;
+    }
+}
+
+@-webkit-keyframes hide /* Safari and Chrome */
+{
+    0% {
+        opacity: 1;
+    }
+    50% { 
+        opacity: 1;
+    }
+
+    99% { 
+        opacity: 0;
+    }
+    100% {
+      opacity: 0;
+    }
+}
 

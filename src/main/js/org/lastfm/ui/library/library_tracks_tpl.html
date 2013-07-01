@@ -19,7 +19,6 @@
     <li ng-repeat="track in search.results" class="unselectable {{'_' + track.status}}" ng-show="!track.hide" ng-selected="track.checked" title="{{track.name}} - {{track.artist.name}}">
         <div class="lastfmbot-results-list-item-ctrl">
             <span class="glyph" title="Добавить в избранное">h</span>
-            <!---<span class="glyph" title="Добавить в плэйлист">b</span>---!>
         </div> 
         <div ng-click="select(track)" >
             <h3>{{track.name}}</h3>

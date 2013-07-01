@@ -1,23 +1,98 @@
 define([
     'dojo/text!./library_artists_tpl.html',
     'dojo/text!./library_tracks_tpl.html',
+    'dojo/text!./library_task_tracks_tpl.html',
     'dojo/_base/lang',
     'dojo/promise/all',
     'dojo/Deferred'
-], function(tplArtists, tplTracks, lang, all, Deferred) {
+], function(tplArtists, tplTracks, tplTaskTracks, lang, all, Deferred) {
     var filters, directives, controllers, module, libraryCtrl, limit;
 
     filters = angular.module('org.lastfm.ui.library.filters', []); 
     directives = angular.module('org.lastfm.ui.library.directives', []); 
     controllers = angular.module('org.lastfm.ui.library.controllers', []); 
     limit = 100;
+
+    controllers.controller(
+        'org.lastfm.ui.library.controllers.addingTrackTaskCtrl', 
+        ['$q', '$timeout', '$scope', '$lastFMAPI', 
+        function($q, $timeout, $scope, $lastFMAPI) {
+            var tracks, batchSize, packages, i, k, j, processPack, dfd;
+            batchSize = 5;
+            tracks = $scope.task.tracks;
+
+            i = 0;
+            k = 0;
+            j = 0;
+            packages = [[]];
+            while (i < tracks.length) {
+                if (j === 5) {
+                    j = 0;
+                    packages.push([]);
+                    k++;
+                } 
+                packages[k].push([tracks[i].artist.name, tracks[i].name, $lastFMAPI.session.key, tracks[i]]);
+                j++;
+                i++;
+            }
+
+            processPack = function(pack, delay) {
+                var dfd = new Deferred(), timeoutHandler;
+
+                timeoutHandler = $timeout(function() {
+                    dfd.resolve();
+                }, delay);
+
+                dfd.then(null, function() {
+                    $timeout.cancel(timeoutHandler);
+                });
+
+                pack.forEach(function(track) {
+                    track[3].status = 'starting';
+                });
+
+                $scope.$apply();
+                return dfd.then(function() {
+                    return all(pack.map(function(track) {
+                        track[3].status = 'process';
+                        return $lastFMAPI.library.addTrack.apply($lastFMAPI.library, track).then(function() {
+                            track[3].status = 'added';
+                            $scope.$apply();
+                        });
+                    })).then(function() {
+                        $timeout(function() {
+                            pack.forEach(function(item) {
+                                item[3].hide = true;
+                            });
+                        }, 400);
+                    });
+                });
+            };
+
+            var process = new Deferred(), promise = process.promise;
+
+            packages.forEach(function(pack, i){
+                promise = promise.then(function() {
+                    return processPack(pack, 3000 * (i && 1));   
+                });
+            });                
+            
+            process.resolve();
+            return false;
+        }
+    ]);
+
     libraryCtrl = controllers.controller('org.lastfm.ui.library.controllers.libraryCtrl', ['$q', '$timeout', '$scope', '$lastFMAPI', '$location', '$taskboard', function($q, $timeout, $scope, $lastFMAPI, $location, $taskboard) {
-        $scope.searchBtnDisabled = false;
-        $scope.addArtistsBtnDisabled = false;
-        $scope.addTracksBtnDisabled = false;
-        $scope.search = {};
-        $scope.search.limit = limit;
-        $scope.search.page = 0;
+
+        $scope.reset = function () {
+            $scope.searchBtnDisabled = false;
+            $scope.addArtistsBtnDisabled = false;
+            $scope.addTracksBtnDisabled = false;
+            $scope.search = {};
+            $scope.search.limit = limit;
+            $scope.search.page = 0;
+            $scope.tags = '';
+        }
 
         $scope.searchArtistsByTags = function(append) {
             $scope.searchBtnDisabled = true;
@@ -110,73 +185,20 @@ define([
         };
 
         $scope.addTracks = function() {
-            var tracks, batchSize, packages, i, k, j, processPack, dfd;
+            var tracks;
 
-            $taskboard.addTask();
-            batchSize = 5;
-            $scope.addtracksBtnDisabled = true;
-            
             tracks = $scope.search.results.filter(function(track) {
                 track.hide = !track.checked;
+                if (!track.hide) {
+                    track.status = 'waiting';
+                }
                 return track.checked;
-            }).map(function(track) {
-                track.status = 'waiting';
-                return {track : track.name, artist : track.artist.name, item: track};
             });
-
-            $scope.$apply();
-            i = 0;
-            k = 0;
-            j = 0;
-            packages = [[]];
-            while (i < tracks.length) {
-                if (j === 5) {
-                    j = 0;
-                    packages.push([]);
-                    k++;
-                } 
-                packages[k].push([tracks[i].artist, tracks[i].track, $lastFMAPI.session.key, tracks[i].item]);
-                j++;
-                i++;
-            }
-
-            processPack = function(pack, delay) {
-                var dfd = new Deferred(), timeoutHandler;
-
-                timeoutHandler = $timeout(function() {
-                    dfd.resolve();
-                }, delay);
-
-                dfd.then(null, function() {
-                    $timeout.cancel(timeoutHandler);
-                });
-
-                pack.forEach(function(track) {
-                    track[3].status = 'starting';
-                });
-
-                $scope.$apply();
-                return dfd.then(function() {
-                    return all(pack.map(function(track) {
-                        track[3].status = 'process';
-                        return $lastFMAPI.library.addTrack.apply($lastFMAPI.library, track).then(function() {
-                            track[3].status = 'added';
-                            $scope.$apply();
-                        });
-                    }));
-                });
-            };
-
-            var process = new Deferred(), promise = process.promise;
-
-            packages.forEach(function(pack, i){
-                promise = promise.then(function() {
-                    return processPack(pack, 3000 * (i && 1));   
-                });
-            });                
-            
-            process.resolve();
-            return false;
+            $taskboard.addTask({
+                tracks : tracks,
+                header : 'Добавление треков (0/' + tracks.length + ')'
+            }, tplTaskTracks, 'org.lastfm.ui.library.controllers.addingTrackTaskCtrl');
+            $scope.reset();
         };
 
         $scope.addArtists = function() {
@@ -198,6 +220,8 @@ define([
             });
             return false;
         };
+
+        $scope.reset();
     }]);
 
     module = angular.module('org.lastfm.ui.library', ['org.lastfm.ui.library.filters', 'org.lastfm.ui.library.directives', 'org.lastfm.ui.library.controllers']);

@@ -26,7 +26,11 @@ define([
                 key : this.key,
                 secret : this.secret
             });
-            this.session = JSON.parse(cookie('session')); 
+            try {
+                this.session = JSON.parse(cookie('session')); 
+            } catch (e) {
+                this.session = null;
+            }
         },
         //Authentification with api key
         auth : function(key) {
@@ -87,7 +91,6 @@ define([
                 this._checkerCounter--;
                 this._checkCookieTimeout = setTimeout(this._checkForToken.bind(this, requestId, dfd), 200);
             } else if (response) {
-                debugger;
                 try {
                     response = JSON.parse(response);
                     if (response.status === 'OK') {
