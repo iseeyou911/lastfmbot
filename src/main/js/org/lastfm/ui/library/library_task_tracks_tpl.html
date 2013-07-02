@@ -1,16 +1,24 @@
-<div class="lastfm-ctrl-panel" ng-show="task.tracks && task.tracks.length">
-    <button class="btn btn-warn btn-mini">Отменить</button>
-</div>
-<ul class="lastfmbot-results-list">
-    <li ng-repeat="track in task.tracks" class="unselectable {{'_' + track.status}}" ng-show="!track.hide" title="{{track.name}} - {{track.artist.name}}">
+<section>
+    <header class="lastfm-task-header-wrapper">
+        <div class="lastfm-task-header">
+            <span>{{task.header}}</span> {{task.completed}} из {{task.count}}
+        </div>
+        <div style="width: {{task.completed / task.count * 100}}%" class="lastfm-task-header-progress"></div>
+    </header>
+    <div class="lastfm-ctrl-panel" ng-show="task.tracks && task.tracks.length">
+        <button class="btn btn-warn btn-mini">Отменить</button>
+    </div>
+    <ul class="lastfmbot-results-list">
+        <li ng-repeat="track in task.tracks" class="unselectable {{'_' + track.status}}" ng-show="!track.hide" title="{{track.name}} - {{track.artist.name}}">
         <div class="lastfmbot-results-list-item-ctrl">
             <span class="glyph" title="Добавить в избранное">h</span>
         </div> 
         <div  >
             <h3>{{track.name}}</h3>
             <p>
-                {{track.artist.name}}
+            {{track.artist.name}}
             </p>
         </div>
-    </li>
-</ul>
+        </li>
+    </ul>
+</section>

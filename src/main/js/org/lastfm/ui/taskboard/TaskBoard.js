@@ -13,41 +13,40 @@ define([
 
     module.config(['$provide', function($provide){
         $provide.service('$taskboard', ['$rootScope', '$controller', '$compile', function($rootScope, $controller, $compile) {
-            var tasks;
-            tasks = [];
+            var tasks, idGenerator;
+
+            idGenerator = 0;
+            tasks = {};
 
             return {
                 addTask : function(task, tpl, _ctrl) {
-                    var ctrl, $scope, node, wrapper;
+                    var ctrl, $scope, node, wrapper, id;
 
+                    id = ++idGenerator;
                     $scope = $rootScope.$new();
                     
                     $scope.task = task;
 
                     node = domConstruct.create('div', {
-                        'class' : 'lastfm-taskboard-task-panel'
-                    }, document.body);
-
-                    domConstruct.create('div', {
-                        innerHTML : '{{task.header}}',
-                        'class' : 'lastfm-taskboard-task-panel-header'
-                    }, node);
-
-
-                    wrapper = domConstruct.create('div', {
+                        'class' : 'lastfm-taskboard-task-panel',
                         innerHTML : tpl
-                    }, node);
+                    }, document.body);
 
                     node.dataset['ngController'] = _ctrl;
 
                     $compile(node)($scope);
 
-                    tasks.push((function(obj){return obj})({
-                        wrapper : wrapper,
+                    $scope.$on('$destroy', function() {
+                        domConstruct.destroy(node); 
+                        delete task[id];
+                    });
+
+                    tasks[id] = {
                         task : task,
                         node : node,
                         $scope : $scope
-                    }));
+                    };
+
                 }
             };
         }]);

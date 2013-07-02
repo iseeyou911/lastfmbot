@@ -13,10 +13,11 @@ define([
     controllers = angular.module('org.lastfm.ui.library.controllers', []); 
     limit = 100;
 
+    
     controllers.controller(
         'org.lastfm.ui.library.controllers.addingTrackTaskCtrl', 
         ['$q', '$timeout', '$scope', '$lastFMAPI', 
-        function($q, $timeout, $scope, $lastFMAPI) {
+            function($q, $timeout, $scope, $lastFMAPI) {
             var tracks, batchSize, packages, i, k, j, processPack, dfd;
             batchSize = 5;
             tracks = $scope.task.tracks;
@@ -57,14 +58,20 @@ define([
                         track[3].status = 'process';
                         return $lastFMAPI.library.addTrack.apply($lastFMAPI.library, track).then(function() {
                             track[3].status = 'added';
+                            $scope.task.completed++;
                             $scope.$apply();
                         });
                     })).then(function() {
+                        var _dfd = new Deferred();
+
                         $timeout(function() {
                             pack.forEach(function(item) {
                                 item[3].hide = true;
                             });
+                            _dfd.resolve();
                         }, 400);
+
+                        return _dfd;
                     });
                 });
             };
@@ -77,6 +84,11 @@ define([
                 });
             });                
             
+            promise.then(function() {
+                $scope.task.tracks = [];
+                $scope.$apply();
+                $scope.$parent.$destroy();
+            });
             process.resolve();
             return false;
         }
@@ -195,9 +207,11 @@ define([
                 return track.checked;
             });
             $taskboard.addTask({
+                completed : 0,
+                count : tracks.length,
                 tracks : tracks,
-                header : 'Добавление треков (0/' + tracks.length + ')'
-            }, tplTaskTracks, 'org.lastfm.ui.library.controllers.addingTrackTaskCtrl');
+                header : 'Добавление треков'
+                }, tplTaskTracks, 'org.lastfm.ui.library.controllers.addingTrackTaskCtrl');
             $scope.reset();
         };
 

@@ -9,6 +9,7 @@ input {
     list-style: none;
     margin: 0;
     padding: 0;
+    margin-right: 250px;
 }
 .lastfmbot-results-list li[selected=selected] {
     background: rgb(243, 255, 223);
@@ -69,7 +70,24 @@ input {
     margin: 2px 0 2px 0; 
     white-space: nowrap;
 }
+.lastfm-task-header {
+    padding : 0 6px 0 6px;
+}
+.lastfm-task-header-wrapper {
+    position : relative;
+    margin-right: 15px;
+}
+.lastfm-task-header-progress {
+    transition: width 0.2s;
+    -webkit-transition: width 0.2s; /* Safari */
 
+    position: absolute;
+    height: 100%;
+    background: rgb(204, 255, 73);
+    top: 0;
+    z-index: -1;
+
+}
 .lastfm-taskboard-task-panel {
   position: fixed;
   top: 0;
