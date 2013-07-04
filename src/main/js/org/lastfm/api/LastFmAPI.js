@@ -8,9 +8,10 @@ define([
  'dojox/uuid/generateRandomUuid',
  'org/lastfm/api/TagsAPI',
  'org/lastfm/api/LibraryAPI',
+ 'org/lastfm/api/TrackAPI',
  'org/lastfm/api/APITools',
  'dojo/Deferred'
-], function(declare, lang, ioQuery, cookie, request, MD5, uuid, TagsAPI, LibraryAPI, APITools, Deferred) {
+], function(declare, lang, ioQuery, cookie, request, MD5, uuid, TagsAPI, LibraryAPI, TrackAPI, APITools, Deferred) {
     var _host = '/api/';
     var _api_root = '/2.0/';
 
@@ -26,11 +27,21 @@ define([
                 key : this.key,
                 secret : this.secret
             });
+
+            this.track = new TrackAPI({
+                key : this.key,
+                secret : this.secret
+            });
+
             try {
                 this.session = JSON.parse(cookie('session')); 
+                this.setupSession();
             } catch (e) {
                 this.session = null;
             }
+        },
+        setupSession : function() {
+            this.tag.sessionKey = this.library.sessionKey = this.track.sessionKey = this.session.key;
         },
         //Authentification with api key
         auth : function(key) {
@@ -59,6 +70,7 @@ define([
                 }).then(function(result) {
                     if (result.session) {
                         self.session = result.session;
+                        self.setupSession();
                         cookie('session', JSON.stringify(self.session), {
                             'path' : '/',
                             expires : new Date(+(new Date()) + 2592000000)

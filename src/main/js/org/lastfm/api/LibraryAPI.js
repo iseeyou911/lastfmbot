@@ -21,6 +21,7 @@ define([
 
         addTrack: function(artist, track, sessionKey) {
 
+            sessionKey = sessionKey || this.sessionKey;
             if (!artist || !track || !sessionKey) {
                 throw 'All params are required (artist, track, sessionKey)';
             }
@@ -41,6 +42,7 @@ define([
             var _artists;
             _artists = {};
             
+            sessionKey = sessionKey || this.sessionKey;
             if (!artists || !sessionKey) {
                 throw 'All params are required (artists, sessionKey)';
             }

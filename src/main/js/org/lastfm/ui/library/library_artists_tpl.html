@@ -1,20 +1,29 @@
 <form novalidate name="artistsByTagsForm">
-    Теги: <input required type="text" ng-model="search.tags" />
-    <p>
+    <div>
+        Теги: <input required type="text" ng-model="search.tags" />
+    <button class="btn btn-primary" ng-click="searchArtistsByTags()" ng-disabled="artistsByTagsForm.$invalid || searchBtnDisabled">Поиск артистов</button>
+    </div>
+    <p class="muted fs-s">
         Тэги можно разделять запятой или точкой с запятой.
     </p>
-    <button ng-click="searchArtistsByTags()" ng-disabled="artistsByTagsForm.$invalid || searchBtnDisabled">Поиск артистов</button>
-    <button ng-click="addArtists()" ng-disabled="!search.results || !search.results.length || addArtistsBtnDisabled">Добавить артистов</button>
 </form>
-
 <div ng-show="search.results && search.results.length">
     <span ng-click="selectAll()" class="pseudo-link">Выбрать все</span>
     <span ng-click="deselectAll()" class="pseudo-link">Отменить все</span>
 </div>
-<ul >
-    <li ng-repeat="artist in search.results">
-        <input type="checkbox" ng-model="artist.checked"/>
-        
-        <h3>{{artist.name}}</h3>
+
+<div class="lastfm-ctrl-panel" ng-show="search.results && search.results.length">
+    <button class="btn btn-success btn-mini" ng-click="addArtists()" ng-disabled="!search.results || !search.results.length || addTracksBtnDisabled">Добавить артистов</button>
+    <span class="btn-group">
+        <span ng-click="selectAll()" class="btn btn-mini">Выбрать все</span>
+        <span ng-click="deselectAll()" class="btn btn-mini">Отменить все</span>
+    </span>
+</div>
+
+<ul class="lastfmbot-results-list">
+    <li ng-repeat="artist in search.results | orderBy:'name'" class="unselectable {{'_' + artist.status}}" ng-show="!artist.hide" ng-selected="artist.checked" title="{{artist.name}} - {{artist.artist.name}}">
+        <div ng-click="select(artist)" >
+            <h3>{{artist.name}}</h3>
+        </div>
     </li>
 </ul>

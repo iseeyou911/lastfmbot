@@ -55,12 +55,22 @@ define([
                 $scope.$apply();
                 return dfd.then(function() {
                     return all(pack.map(function(track) {
+                        var addTrackPromise;
                         track[3].status = 'process';
-                        return $lastFMAPI.library.addTrack.apply($lastFMAPI.library, track).then(function() {
+                        
+                        if (track[3].favorite) {
+                            addTrackPromise = $lastFMAPI.track.love.apply($lastFMAPI.track, track);
+                        } else {
+
+                            addTrackPromise = $lastFMAPI.library.addTrack.apply($lastFMAPI.library, track);
+                        }
+                        addTrackPromise.then(function() {
                             track[3].status = 'added';
                             $scope.task.completed++;
                             $scope.$apply();
                         });
+
+                        return addTrackPromise;
                     })).then(function() {
                         var _dfd = new Deferred();
 
@@ -113,10 +123,12 @@ define([
             }
             $scope.search.page = append ? $scope.search.page + 1: 0;
             
-            $lastFMAPI.tag.getTopArtists($scope.search.tags.split(/[,;]\s*/), limit, $scope.search.page).then(function(result) {
+
+            self._searchDfd && !self._searchDfd.isFulfilled() && self.cancel();
+            self._searchDfd = $lastFMAPI.tag.getTopArtists($scope.search.tags.split(/[,;]\s*/), limit, $scope.search.page).then(function(result) {
 
                 $scope.$apply(function(){
-                    var artists;
+                    var artists, checked;
                      
                     if (result.error) {
                         $scope.searchBtnDisabled = false;
@@ -127,9 +139,13 @@ define([
                     artists = [];
                     result = result.topartists;
 
+                    checked = !$scope.search.results.some(function(item){
+                        return !item.checked;
+                    });
+
                     (lang.isArray(result) ? result : [result]).forEach(function(resultSet) {
                         (lang.isArray(resultSet.artist) ? resultSet.artist : [resultSet.artist]).forEach(function(artist) {
-                            artists.push(lang.mixin(artist, {tags : resultSet['@attr'], checked : true}));
+                            artists.push(lang.mixin(artist, {tags : resultSet['@attr'], checked : checked}));
                         });   
                     });
 
@@ -152,10 +168,12 @@ define([
             }
             $scope.search.page = append ? $scope.search.page + 1: 0;
             
-            $lastFMAPI.tag.getTopTracks($scope.search.tags.split(/[,;]\s*/), limit, $scope.search.page).then(function(result) {
+            self._searchDfd && !self._searchDfd.isFulfilled() && self.cancel();
+
+            self._searchDfd = $lastFMAPI.tag.getTopTracks($scope.search.tags.split(/[,;]\s*/), limit, $scope.search.page).then(function(result) {
 
                 $scope.$apply(function(){
-                    var tracks;
+                    var tracks, checked;
                     if (result.error) {
                         $scope.searchBtnDisabled = false;
                         $scope.search.error = result.error.message;
@@ -163,10 +181,14 @@ define([
                     }
                     tracks = [];
                     result = result.toptracks;
+                    
+                    checked = !$scope.search.results.some(function(item){
+                        return !item.checked;
+                    });
 
                     (lang.isArray(result) ? result : [result]).forEach(function(resultSet) {
                         (lang.isArray(resultSet.track) ? resultSet.track : [resultSet.track]).forEach(function(track) {
-                            tracks.push(lang.mixin(track, {tags : resultSet['@attr'], checked : true}));
+                            tracks.push(lang.mixin(track, {tags : resultSet['@attr'], checked : checked}));
                         });   
                     });
 
@@ -191,8 +213,9 @@ define([
         };
 
         $scope.deselectAll = function() {
-            $scope.search.results.forEach(function(artist) {
-                artist.checked = false; 
+            $scope.search.results.forEach(function(item) {
+                item.checked = false; 
+                item.favorite = false; 
             });  
         };
 

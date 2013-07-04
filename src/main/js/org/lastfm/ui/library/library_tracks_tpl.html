@@ -16,9 +16,9 @@
     </span>
 </div>
 <ul class="lastfmbot-results-list">
-    <li ng-repeat="track in search.results" class="unselectable {{'_' + track.status}}" ng-show="!track.hide" ng-selected="track.checked" title="{{track.name}} - {{track.artist.name}}">
+    <li ng-repeat="track in search.results | orderBy:'artist.name'" class="unselectable {{'_' + track.status}}" ng-show="!track.hide" ng-selected="track.checked" title="{{track.name}} - {{track.artist.name}}">
         <div class="lastfmbot-results-list-item-ctrl">
-            <span class="glyph" title="Добавить в избранное">h</span>
+            <span class="glyph lastfmbot-results-list-item-fav" ng-selected="track.favorite" ng-click="track.favorite = !track.favorite; track.checked = track.favorite || track.checked" title="Добавить в избранное">h</span>
         </div> 
         <div ng-click="select(track)" >
             <h3>{{track.name}}</h3>

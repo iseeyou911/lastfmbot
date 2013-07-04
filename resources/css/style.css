@@ -15,7 +15,42 @@ input {
     background: rgb(243, 255, 223);
 }
 
+.lastfmbot-results-list li:after {
+    position: absolute;
+    top: 0;
+    left: 93%;
+    right: 0;
+    content: '';
+    bottom: 20px;
 
+    background: -moz-linear-gradient(left,  rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(255,255,255,0)), color-stop(100%,rgba(255,255,255,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(left,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* IE10+ */
+    background: linear-gradient(to right,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 */
+
+}
+.lastfmbot-results-list li[selected=selected]:after {
+    background: -moz-linear-gradient(left,  rgba(243,255,223,0) 0%, rgba(243,255,223,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(243,255,223,0)), color-stop(100%,rgba(243,255,223,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left,  rgba(243,255,223,0) 0%,rgba(243,255,223,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left,  rgba(243,255,223,0) 0%,rgba(243,255,223,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(left,  rgba(243,255,223,0) 0%,rgba(243,255,223,1) 100%); /* IE10+ */
+    background: linear-gradient(to right,  rgba(243,255,223,0) 0%,rgba(243,255,223,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00f3ffcb', endColorstr='#f3ffcb',GradientType=1 ); /* IE6-9 */
+    
+}
+
+.lastfmbot-results-list li._waiting:after {
+    background: -moz-linear-gradient(left,  rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(255,255,255,0)), color-stop(100%,rgba(255,255,255,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(left,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* IE10+ */
+    background: linear-gradient(to right,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* W3C */
+}
 .lastfmbot-results-list li._waiting{
     background: rgb(255, 255, 255) !important;
 }
@@ -24,7 +59,20 @@ input {
     background: rgb(129, 240, 255) !important;
 }
 
-.lastfmbot-results-list li._added{
+.lastfmbot-results-list li._process:after {
+    background: none;
+}
+
+.lastfmbot-results-list li._added:after {
+    background: -moz-linear-gradient(left,  rgba(208,255,129,0) 0%, rgba(208,255,129,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(208,255,129,0)), color-stop(100%,rgba(208,255,129,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left,  rgba(208,255,129,0) 0%,rgba(208,255,129,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left,  rgba(208,255,129,0) 0%,rgba(208,255,129,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(left,  rgba(208,255,129,0) 0%,rgba(208,255,129,1) 100%); /* IE10+ */
+    background: linear-gradient(to right,  rgba(208,255,129,0) 0%,rgba(208,255,129,1) 100%); /* W3C */
+    
+}
+.lastfmbot-results-list li._added {
     background: rgb(208, 255, 129) !important;
     animation: hide 1s;
     -webkit-animation: hide 1s; /* Safari and Chrome */
@@ -51,6 +99,10 @@ input {
     position: absolute;
     bottom: 0;
     right : 5px;
+}
+
+.lastfmbot-results-list-item-fav[selected=selected]{
+    color: rgb(226, 34, 88);
 }
 
 .lastfmbot-results-list li h3 {
